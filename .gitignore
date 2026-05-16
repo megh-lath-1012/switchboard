@@ -1,0 +1,40 @@
+# Built artifacts
+**/build/
+*.apk
+*.aar
+*.jks
+*.keystore
+
+# Gradle
+.gradle/
+gradlew.bat
+local.properties
+.kotlin/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+
+# Temporary & Log files
+*.log
+*.txt
+*.hprof
+build_log.txt
+build_log_info.txt
+compile_out.txt
+stacktrace.txt
+assemble_out.txt
+
+# Project specific ignores (Internal docs/reports)
+FINAL_REPORT.md
+PLAN.md
+task.md
+implementation_plan.md
+walkthrough.md
+
+# Marketing/Demo assets (as requested)
+docs/DEMO_SCRIPT.md
+docs/LAUNCH_POST.md
