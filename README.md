@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="Switchboard Banner" width="100%">
+</p>
+
 # Switchboard 🎛️
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
