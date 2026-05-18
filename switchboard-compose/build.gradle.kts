@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "dev.meghlath.switchboard.compose"
+    namespace = "services.pixelpulse.switchboard.compose"
     compileSdk = 35
 
     defaultConfig {

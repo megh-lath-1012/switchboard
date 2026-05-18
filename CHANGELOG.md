@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2026-05-18
+
+### Changed
+- **Group ID / package rename**: Initial public release is published under group ID `services.pixelpulse` (Maven coordinates `services.pixelpulse:switchboard-*`). The internal development group ID `dev.meghlath` was never published and is replaced in full.
+
+---
+
 ## [0.1.0] - 2026-05-15
 
 ### Added

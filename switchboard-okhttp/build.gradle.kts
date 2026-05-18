@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "dev.meghlath.switchboard.okhttp"
+    namespace = "services.pixelpulse.switchboard.okhttp"
     compileSdk = 35
 
     defaultConfig {

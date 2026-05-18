@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.meghlath.switchboard.sample"
+    namespace = "services.pixelpulse.switchboard.sample"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "dev.meghlath.switchboard.sample"
+        applicationId = "services.pixelpulse.switchboard.sample"
         minSdk = 23
         targetSdk = 35
         versionCode = 1

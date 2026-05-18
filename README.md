@@ -32,14 +32,14 @@ Add the following to your `libs.versions.toml`:
 switchboard = "0.1.0"
 
 [libraries]
-switchboard-core = { module = "dev.meghlath.switchboard:switchboard-core", version.ref = "switchboard" }
-switchboard-android = { module = "dev.meghlath.switchboard:switchboard-android", version.ref = "switchboard" }
-switchboard-ksp = { module = "dev.meghlath.switchboard:switchboard-ksp", version.ref = "switchboard" }
+switchboard-core = { module = "services.pixelpulse.switchboard:switchboard-core", version.ref = "switchboard" }
+switchboard-android = { module = "services.pixelpulse.switchboard:switchboard-android", version.ref = "switchboard" }
+switchboard-ksp = { module = "services.pixelpulse.switchboard:switchboard-ksp", version.ref = "switchboard" }
 # Optional modules
-switchboard-compose = { module = "dev.meghlath.switchboard:switchboard-compose", version.ref = "switchboard" }
-switchboard-shake = { module = "dev.meghlath.switchboard:switchboard-shake", version.ref = "switchboard" }
-switchboard-firebase = { module = "dev.meghlath.switchboard:switchboard-firebase", version.ref = "switchboard" }
-switchboard-okhttp = { module = "dev.meghlath.switchboard:switchboard-okhttp", version.ref = "switchboard" }
+switchboard-compose = { module = "services.pixelpulse.switchboard:switchboard-compose", version.ref = "switchboard" }
+switchboard-shake = { module = "services.pixelpulse.switchboard:switchboard-shake", version.ref = "switchboard" }
+switchboard-firebase = { module = "services.pixelpulse.switchboard:switchboard-firebase", version.ref = "switchboard" }
+switchboard-okhttp = { module = "services.pixelpulse.switchboard:switchboard-okhttp", version.ref = "switchboard" }
 ```
 
 Apply the KSP plugin and add dependencies in your `build.gradle.kts`:

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "dev.meghlath.switchboard.firebase"
+    namespace = "services.pixelpulse.switchboard.firebase"
     compileSdk = 35
 
     defaultConfig {

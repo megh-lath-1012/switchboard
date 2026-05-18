@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "dev.meghlath.switchboard.shake"
+    namespace = "services.pixelpulse.switchboard.shake"
     compileSdk = 35
 
     defaultConfig {
