@@ -58,9 +58,9 @@ jobs:
           ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache --no-daemon \
             -PmavenCentralUsername="${{ secrets.OSSRH_USERNAME }}" \
             -PmavenCentralPassword="${{ secrets.OSSRH_PASSWORD }}" \
-            -Psigning.keyId="${{ secrets.SIGNING_KEY_ID }}" \
-            -Psigning.password="${{ secrets.SIGNING_PASSWORD }}" \
-            -Psigning.key="${{ secrets.SIGNING_KEY }}"
+            -PsigningInMemoryKeyId="${{ secrets.SIGNING_KEY_ID }}" \
+            -PsigningInMemoryKeyPassword="${{ secrets.SIGNING_PASSWORD }}" \
+            -PsigningInMemoryKey="${{ secrets.SIGNING_KEY }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
