@@ -5,6 +5,16 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.maven.publish) apply false
+    alias(libs.plugins.vanniktech.maven.publish) apply false
     alias(libs.plugins.kover) apply false
 }
+
+allprojects {
+    if (project.hasProperty("signing.keyId")) {
+        val keyId = project.property("signing.keyId") as String
+        if (keyId.length == 16) {
+            project.setProperty("signing.keyId", keyId.substring(8))
+        }
+    }
+}
+
