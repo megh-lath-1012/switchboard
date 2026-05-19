@@ -16,5 +16,11 @@ allprojects {
             project.setProperty("signing.keyId", keyId.substring(8))
         }
     }
+    if (project.hasProperty("signingInMemoryKeyId")) {
+        val keyId = project.property("signingInMemoryKeyId") as String
+        if (keyId.length == 16) {
+            project.setProperty("signingInMemoryKeyId", keyId.substring(8))
+        }
+    }
 }
 
