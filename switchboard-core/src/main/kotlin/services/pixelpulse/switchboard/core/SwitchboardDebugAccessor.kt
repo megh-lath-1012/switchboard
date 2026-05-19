@@ -4,6 +4,7 @@ import services.pixelpulse.switchboard.annotations.InternalSwitchboardApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 
 /**
  * Internal-only gateway exposing isolated debug capabilities and raw storage channels
@@ -89,6 +90,7 @@ public object SwitchboardDebugAccessor {
                 try {
                     context.overrideStorage().write(key, value)
                 } catch (e: Exception) {
+                    if (e is CancellationException) throw e
                     currentLogger.warn("Failed to write override for key '$key': ${e.message}")
                 }
             }

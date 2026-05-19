@@ -6,6 +6,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -116,6 +117,7 @@ public object Switchboard {
                     overridesMap.clear()
                     overridesMap.putAll(initialOverrides)
                 } catch (e: Exception) {
+                    if (e is CancellationException) throw e
                     currentLogger.warn("Failed to read initial overrides: ${e.message}")
                 }
             }
@@ -130,6 +132,7 @@ public object Switchboard {
                     cache.clear()
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 currentLogger.warn("Error collecting overrideStorage changes: ${e.message}")
             }
         }
@@ -141,6 +144,7 @@ public object Switchboard {
                     cache.clear()
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 currentLogger.warn("Error collecting backend changes: ${e.message}")
             }
         }
@@ -411,6 +415,7 @@ public object Switchboard {
                         val backendVal = try {
                             fetcher()
                         } catch (e: Exception) {
+                            if (e is CancellationException) throw e
                             if (e is ClassCastException || e.toString().contains("ClassCastException") || e.message?.contains("Incompatible types") == true) {
                                 currentLogger.warn("Backend returned wrong type for key $key: ${e.message}")
                             } else {
