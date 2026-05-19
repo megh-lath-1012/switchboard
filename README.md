@@ -10,24 +10,71 @@
 [![Kotlin](https://img.shields.io/badge/kotlin-2.0.21-purple.svg)](https://kotlinlang.org/)
 [![KSP](https://img.shields.io/badge/KSP-2.0.21--1.0.27-orange.svg)](https://github.com/google/ksp)
 
-**Switchboard** is a production-grade, type-safe feature flagging engine for Android. It leverages Kotlin Symbol Processing (KSP) to turn simple property declarations into a powerful configuration system, complete with a reactive debug UI and network diagnostics.
+**Switchboard is a compile-time type-safe feature flagging SDK for Android that automatically generates clean Kotlin extension properties from annotated declarations.** It bridges local defaults, remote configurations, and local debug override menus with zero runtime casting, zero duplicate fallback declarations, and zero hardcoded string keys.
 
 ---
 
-## ✨ Features
+## 🚀 Key Features
 
-- **🛡️ End-to-End Type Safety**: Define flags once as Kotlin properties. Access them anywhere with full compiler support—no magic strings, no manual casting.
-- **📊 Real-time Debug Dashboard**: Auto-generated Jetpack Compose UI to inspect every flag's source (Remote, Local Override, or Default) and toggle overrides on the fly.
-- **🤝 Plug-and-Play Backends**: First-class support for **Firebase Remote Config** with reactive update flows.
-- **🏎️ Zero-Reflective Performance**: KSP generates all registry code at compile-time for maximum runtime efficiency.
-- **🌐 Network Diagnostics**: Built-in **OkHttp Interceptor** that attributes every network request to the specific feature flags driving the app logic.
-- **📳 Shake to Debug**: Integrated shake-to-open gesture for instant access to the debug console in non-production builds.
+* **🛡️ Compile-Time Type Safety**: Declare flags once as Kotlin properties. KSP generates extension accessors for native types (`Boolean`, `Int`, `Long`, `Float`, `Double`, `String`, `Enum`) with verified compiler support.
+* **🎛️ Zero-Reflective Performance**: Avoids heavy runtime reflection by resolving code structures at compile-time, ensuring instant flag resolution without slowing down your app's main thread.
+* **🤝 Pluggable Architecture**: Map your configurations seamlessly to any remote backend (like Firebase Remote Config or custom HTTP providers) with flow-based reactive updates.
+* **📊 Auto-Generated Debug Overrides**: Generates a local override registry supporting an optional Jetpack Compose debug sheet and shake-to-open gesture for testing flag combinations during QA.
 
 ---
 
-## 🛠️ Installation
+## 🔍 Before vs. After
 
-Add the following to your `libs.versions.toml`:
+### Standard Android Approach ❌
+Setting up and retrieving feature flags manually is verbose, requires duplicating fallback defaults, and relies on error-prone string keys:
+
+```kotlin
+// 1. Hardcoded string keys
+object ConfigKeys {
+    const val API_TIMEOUT = "api_timeout_ms"
+    const val EXPERIMENT_VARIANT = "checkout_variant"
+}
+
+// 2. Retrieval involves try-catch blocks and manual type fallback mapping
+val timeoutMs = try {
+    remoteConfig.getLong(ConfigKeys.API_TIMEOUT).toInt()
+} catch (e: Exception) {
+    5000 // Duplicated fallback value
+}
+
+val rawVariant = remoteConfig.getString(ConfigKeys.EXPERIMENT_VARIANT)
+val variant = try { 
+    CheckoutVariant.valueOf(rawVariant) 
+} catch (e: Exception) { 
+    CheckoutVariant.CONTROL // Manual parsing fallback
+}
+```
+
+### With Switchboard ✅
+Flags are declared once in a clean container, and KSP automatically makes them available as type-safe extension properties on `Switchboard`:
+
+```kotlin
+@Flags
+object AppFlags {
+    @IntFlag(default = 5000, category = "Network")
+    val apiTimeoutMs: Int = 5000
+
+    @EnumFlag(default = "CONTROL", enumClass = CheckoutVariant::class, category = "Checkout")
+    val checkoutVariant: CheckoutVariant = CheckoutVariant.CONTROL
+}
+
+// Access flag values dynamically with zero boilerplate:
+val timeoutMs = Switchboard.apiTimeoutMs
+val variant = Switchboard.checkoutVariant
+```
+
+---
+
+## 🛠️ Quick Start & Installation
+
+### 1. Add Dependencies
+
+Add the dependencies to your `libs.versions.toml`:
 
 ```toml
 [versions]
@@ -40,11 +87,9 @@ switchboard-ksp = { module = "services.pixelpulse:switchboard-ksp", version.ref 
 # Optional modules
 switchboard-compose = { module = "services.pixelpulse:switchboard-compose", version.ref = "switchboard" }
 switchboard-shake = { module = "services.pixelpulse:switchboard-shake", version.ref = "switchboard" }
-switchboard-firebase = { module = "services.pixelpulse:switchboard-firebase", version.ref = "switchboard" }
-switchboard-okhttp = { module = "services.pixelpulse:switchboard-okhttp", version.ref = "switchboard" }
 ```
 
-Apply the KSP plugin and add dependencies in your `build.gradle.kts`:
+Apply the KSP plugin and add the dependencies to your app-level `build.gradle.kts`:
 
 ```kotlin
 plugins {
@@ -55,94 +100,37 @@ dependencies {
     implementation(libs.switchboard.android)
     ksp(libs.switchboard.ksp)
     
-    // Add optional modules as needed
+    // Optional debug modules
     implementation(libs.switchboard.compose)
     implementation(libs.switchboard.shake)
 }
 ```
 
-Or declare the dependency strings directly:
-
-```kotlin
-dependencies {
-    implementation("services.pixelpulse:switchboard-core:0.1.0")
-    implementation("services.pixelpulse:switchboard-android:0.1.0")
-    ksp("services.pixelpulse:switchboard-ksp:0.1.0")
-}
-```
-
 ---
 
-## 📖 Quick Start
+## 📖 Minimal Usage Example
 
-### 1. Declare your Flags
-Use the `@Flags` annotation on an object. Each property becomes a feature flag.
-
-```kotlin
-@Flags
-object AppFlags {
-    @BooleanFlag(default = false, description = "Enable the new experimental checkout flow", category = "Checkout")
-    val useNewCheckout: Boolean = false
-
-    @StringFlag(default = "Welcome!", description = "Headline for the home screen")
-    val homeHeadline: String = "Welcome!"
-    
-    @EnumFlag(default = "CONTROL", enumClass = Variant::class)
-    val experimentVariant: Variant = Variant.CONTROL
-}
-
-enum class Variant { CONTROL, TEST_A, TEST_B }
-```
-
-### 2. Initialize Switchboard
-In your `Application` class, initialize the runtime.
+Initialize `Switchboard` inside your `Application` class, pointing to the KSP-generated `SwitchboardRegistryImpl`:
 
 ```kotlin
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        
+
         Switchboard.init(
             context = this,
-            registry = SwitchboardRegistryImpl, // Generated by KSP
-            backend = FirebaseRemoteConfigBackend(), // Optional
+            registry = SwitchboardRegistryImpl, // Generated automatically by KSP
+            backend = FirebaseRemoteConfigBackend(), // Optional: Map to remote source
             debugEnabled = BuildConfig.DEBUG
         )
-        
-        // Optional: Install shake detector
+
+        // Install shake-to-open gesture for debug builds
         if (BuildConfig.DEBUG) {
             SwitchboardShakeDetector.install(this)
         }
     }
 }
 ```
-
-### 3. Use Flags in your App
-Just access the properties! Switchboard automatically resolves the value based on local overrides and remote backends.
-
-```kotlin
-@Composable
-fun HomeScreen() {
-    Column {
-        Text(text = AppFlags.homeHeadline)
-        
-        if (AppFlags.useNewCheckout) {
-            NewCheckoutButton()
-        }
-    }
-}
-```
-
----
-
-## 🔌 Optional Modules
-
-| Module | Purpose |
-| :--- | :--- |
-| `switchboard-compose` | Provides the Jetpack Compose debug screen. |
-| `switchboard-shake` | Shake-to-open trigger for the debug dashboard. |
-| `switchboard-firebase` | `Backend` implementation for Firebase Remote Config. |
-| `switchboard-okhttp` | Interceptor for logging flag states in network requests. |
 
 ---
 
